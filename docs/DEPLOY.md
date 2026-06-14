@@ -30,10 +30,18 @@ Firestore security rules (see [SETUP.md](SETUP.md) step 5), not by the host.
    | Field | Value |
    |---|---|
    | **Base directory** | `app` |
+   | **Package directory** | *leave empty* |
    | **Build command** | `npm run build` |
    | **Publish directory** | `app/dist` |
+   | **Functions directory** | *leave empty* (this project has none) |
 
    (These match `app/netlify.toml`, so Netlify usually fills them in for you.)
+
+   > ⚠ **Don't double the path.** Netlify's **Publish directory** is relative to the
+   > repo **root**, so it's `app/dist`, *not* `app/app/dist`. Leave **Package directory**
+   > empty (the help text says to set it only if it differs from the base directory, it
+   > doesn't here). If in doubt, clear the Publish field too: `app/netlify.toml` already
+   > declares `publish = "dist"` and Netlify resolves it correctly on its own.
 3. **Environment variables** → add every `VITE_*` value from your `app/.env`
    (the six `VITE_FIREBASE_*` keys, `VITE_ALLOWED_EMAIL`, and optionally
    `VITE_FIREBASE_VAPID_KEY` to enable phone push notifications). Without them the
@@ -61,6 +69,7 @@ Repeat the import for the **same repo**, a second site:
    | Field | Value |
    |---|---|
    | **Base directory** | `landing` |
+   | **Package directory** | *leave empty* |
    | **Build command** | `npm run build` |
    | **Publish directory** | `landing/dist` |
 
