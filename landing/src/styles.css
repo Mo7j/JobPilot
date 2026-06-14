@@ -85,10 +85,9 @@ body {
 .gooey-word {
   position: relative;
   display: inline-block;
-  min-width: 6.05em;
   white-space: nowrap;
   vertical-align: baseline;
-  contain: layout paint;
+  contain: layout;
 }
 
 .gooey-word-layer {
@@ -96,7 +95,7 @@ body {
   inset: 0;
   display: flex;
   align-items: baseline;
-  justify-content: flex-start;
+  justify-content: center;
   transform: translateZ(0);
 }
 
@@ -105,11 +104,23 @@ body {
   inset: 0;
   display: inline-block;
   user-select: none;
-  text-align: left;
+  text-align: center;
   color: var(--accent);
   will-change: filter, opacity;
   transform: translateZ(0);
   backface-visibility: hidden;
+}
+
+/* Keep the two headline lines stacked and centered ("Job hunting, without" /
+   "the <word>") so the morphing word only resizes its own centered line
+   instead of re-balancing the whole heading each cycle. */
+.hero-headline-main,
+.hero-headline-rest {
+  display: block;
+}
+
+.hero-headline-main {
+  white-space: nowrap;
 }
 
 /* ------------------------------------------------------------------ *

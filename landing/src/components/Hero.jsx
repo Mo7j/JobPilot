@@ -71,6 +71,7 @@ function getDemoFrameSrc(path, surface) {
 function GooeyWord({ words, morphTime = 1.05, cooldownTime = 0.35, disabled = false }) {
   const text1Ref = useRef(null);
   const text2Ref = useRef(null);
+  const sizerRef = useRef(null);
   const filterId = `gooey-${useId().replace(/:/g, '')}`;
 
   useEffect(() => {
@@ -85,6 +86,12 @@ function GooeyWord({ words, morphTime = 1.05, cooldownTime = 0.35, disabled = fa
 
     text1Ref.current.textContent = words[wordIndex % words.length];
     text2Ref.current.textContent = words[(wordIndex + 1) % words.length];
+    // The hidden sizer keeps the box exactly as wide as the visible word, so
+    // the line "the <word>" stays tight and centered instead of left-shifting.
+    const sizeTo = (word) => {
+      if (sizerRef.current) sizerRef.current.textContent = word;
+    };
+    sizeTo(words[(wordIndex + 1) % words.length]);
 
     const setMorph = (fraction) => {
       if (!text1Ref.current || !text2Ref.current) return;
@@ -96,6 +103,10 @@ function GooeyWord({ words, morphTime = 1.05, cooldownTime = 0.35, disabled = fa
       const currentFraction = Math.max(1 - fraction, 0.01);
       text1Ref.current.style.filter = `blur(${Math.min(8 / currentFraction - 8, 36)}px)`;
       text1Ref.current.style.opacity = `${Math.pow(currentFraction, 0.4) * 100}%`;
+
+      // Size the box to whichever word is currently dominant (the width change
+      // happens mid-morph, under heavy blur, so it's not visible).
+      sizeTo((fraction >= 0.5 ? text2Ref : text1Ref).current.textContent);
     };
 
     const doCooldown = () => {
@@ -106,6 +117,7 @@ function GooeyWord({ words, morphTime = 1.05, cooldownTime = 0.35, disabled = fa
       text2Ref.current.style.opacity = '100%';
       text1Ref.current.style.filter = '';
       text1Ref.current.style.opacity = '0%';
+      sizeTo(text2Ref.current.textContent); // settled word is always text2
     };
 
     const doMorph = () => {
@@ -173,8 +185,8 @@ function GooeyWord({ words, morphTime = 1.05, cooldownTime = 0.35, disabled = fa
         <span ref={text1Ref} className="gooey-word-text" />
         <span ref={text2Ref} className="gooey-word-text" />
       </span>
-      <span className="invisible" aria-hidden="true">
-        guesswork
+      <span ref={sizerRef} className="invisible" aria-hidden="true">
+        {words[0]}
       </span>
     </span>
   );
