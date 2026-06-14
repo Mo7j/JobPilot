@@ -87,7 +87,6 @@ body {
   display: inline-block;
   white-space: nowrap;
   vertical-align: baseline;
-  contain: layout;
 }
 
 .gooey-word-layer {
@@ -95,7 +94,7 @@ body {
   inset: 0;
   display: flex;
   align-items: baseline;
-  justify-content: center;
+  justify-content: flex-start;
   transform: translateZ(0);
 }
 
@@ -104,7 +103,7 @@ body {
   inset: 0;
   display: inline-block;
   user-select: none;
-  text-align: center;
+  text-align: left;
   color: var(--accent);
   will-change: filter, opacity;
   transform: translateZ(0);

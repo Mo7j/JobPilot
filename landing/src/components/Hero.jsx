@@ -71,8 +71,13 @@ function getDemoFrameSrc(path, surface) {
 function GooeyWord({ words, morphTime = 1.05, cooldownTime = 0.35, disabled = false }) {
   const text1Ref = useRef(null);
   const text2Ref = useRef(null);
-  const sizerRef = useRef(null);
   const filterId = `gooey-${useId().replace(/:/g, '')}`;
+  // Reserve a fixed box ~the median word width so "the" never moves as the word
+  // morphs, and every word still hugs "the" (no gap). Shorter/longer words sit a
+  // hair left/right of dead-center instead of the big offset a longest-word box
+  // would force. The widened filter region (below) lets longer words overflow
+  // without being clipped.
+  const sizerWord = [...words].sort((a, b) => a.length - b.length)[Math.floor(words.length / 2)] || words[0];
 
   useEffect(() => {
     if (disabled) return undefined;
@@ -86,12 +91,6 @@ function GooeyWord({ words, morphTime = 1.05, cooldownTime = 0.35, disabled = fa
 
     text1Ref.current.textContent = words[wordIndex % words.length];
     text2Ref.current.textContent = words[(wordIndex + 1) % words.length];
-    // The hidden sizer keeps the box exactly as wide as the visible word, so
-    // the line "the <word>" stays tight and centered instead of left-shifting.
-    const sizeTo = (word) => {
-      if (sizerRef.current) sizerRef.current.textContent = word;
-    };
-    sizeTo(words[(wordIndex + 1) % words.length]);
 
     const setMorph = (fraction) => {
       if (!text1Ref.current || !text2Ref.current) return;
@@ -103,10 +102,6 @@ function GooeyWord({ words, morphTime = 1.05, cooldownTime = 0.35, disabled = fa
       const currentFraction = Math.max(1 - fraction, 0.01);
       text1Ref.current.style.filter = `blur(${Math.min(8 / currentFraction - 8, 36)}px)`;
       text1Ref.current.style.opacity = `${Math.pow(currentFraction, 0.4) * 100}%`;
-
-      // Size the box to whichever word is currently dominant (the width change
-      // happens mid-morph, under heavy blur, so it's not visible).
-      sizeTo((fraction >= 0.5 ? text2Ref : text1Ref).current.textContent);
     };
 
     const doCooldown = () => {
@@ -117,7 +112,6 @@ function GooeyWord({ words, morphTime = 1.05, cooldownTime = 0.35, disabled = fa
       text2Ref.current.style.opacity = '100%';
       text1Ref.current.style.filter = '';
       text1Ref.current.style.opacity = '0%';
-      sizeTo(text2Ref.current.textContent); // settled word is always text2
     };
 
     const doMorph = () => {
@@ -169,7 +163,7 @@ function GooeyWord({ words, morphTime = 1.05, cooldownTime = 0.35, disabled = fa
     <span className="gooey-word text-accent" aria-label={words[0]}>
       <svg className="absolute h-0 w-0" aria-hidden="true" focusable="false">
         <defs>
-          <filter id={filterId} colorInterpolationFilters="sRGB">
+          <filter id={filterId} colorInterpolationFilters="sRGB" x="-30%" y="-30%" width="160%" height="160%">
             <feColorMatrix
               in="SourceGraphic"
               type="matrix"
@@ -185,8 +179,8 @@ function GooeyWord({ words, morphTime = 1.05, cooldownTime = 0.35, disabled = fa
         <span ref={text1Ref} className="gooey-word-text" />
         <span ref={text2Ref} className="gooey-word-text" />
       </span>
-      <span ref={sizerRef} className="invisible" aria-hidden="true">
-        {words[0]}
+      <span className="invisible" aria-hidden="true">
+        {sizerWord}
       </span>
     </span>
   );
