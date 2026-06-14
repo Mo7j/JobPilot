@@ -99,11 +99,36 @@ a schedule) follow **[docs/SETUP.md](docs/SETUP.md)**. It's eleven steps, each w
 5. **It learns.** Every reject-with-reason teaches an agent. The manager coaches the
    crew nightly from your actual decisions.
 
-## Screenshots
+## A tour of the app
 
-| Pipeline | Approvals | Agents |
+**Overview** — your morning glance: pending approvals, active cases, what the crew did
+overnight, and where the pipeline is stuck. Light and dark themes.
+
+| Light | Dark |
+|---|---|
+| ![Overview light](docs/screenshots/overview-light.png) | ![Overview dark](docs/screenshots/overview-dark.png) |
+
+**Approvals** — the gate. Every drafted CV, filled application, and connection note
+waits here for an approve or a reject-with-reason (the reason is what the agents learn
+from). **Applications** — the pipeline as a kanban board, with a detail drawer per role.
+
+| Approvals | Applications board | Job detail |
 |---|---|---|
-| ![Pipeline](docs/screenshots/applications-board.png) | ![Approvals](docs/screenshots/approvals.png) | ![Agents](docs/screenshots/agents.png) |
+| ![Approvals](docs/screenshots/approvals.png) | ![Applications board](docs/screenshots/applications-board.png) | ![Job detail](docs/screenshots/job-detail.png) |
+
+**Agents** — your crew at a glance: status, cadence, run counts. Pause any agent or
+leave it standing orders. **Insights** — run reports, market trends, and the advisor's
+skill-gap advice. **Tracker** — a manual job tracker plus an offline ATS keyword checker.
+
+| Agents | Insights | Tracker · ATS check |
+|---|---|---|
+| ![Agents](docs/screenshots/agents.png) | ![Insights](docs/screenshots/insights-trends.png) | ![Tracker ATS](docs/screenshots/tracker-ats.png) |
+
+**Installable PWA with phone push.** Add JobPilot to your home screen and turn on push,
+then your phone buzzes the moment an agent needs you (via Firebase Cloud Messaging, no
+third-party service). Setup in [docs/SETUP.md § 6a](docs/SETUP.md).
+
+<img src="docs/screenshots/mobile-overview.png" alt="JobPilot on mobile" width="280" />
 
 ## Status & contributing
 

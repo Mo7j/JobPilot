@@ -36,8 +36,8 @@ Firestore security rules (see [SETUP.md](SETUP.md) step 5), not by the host.
    (These match `app/netlify.toml`, so Netlify usually fills them in for you.)
 3. **Environment variables** → add every `VITE_*` value from your `app/.env`
    (the six `VITE_FIREBASE_*` keys, `VITE_ALLOWED_EMAIL`, and optionally
-   `VITE_FIREBASE_VAPID_KEY`). Without them the site builds fine but runs in
-   **demo mode**.
+   `VITE_FIREBASE_VAPID_KEY` to enable phone push notifications). Without them the
+   site builds fine but runs in **demo mode**.
    - For a **pure public demo**, skip the Firebase vars and instead add
      `VITE_DEMO_MODE = true`. That is exactly what `7js-jobpilot.netlify.app` is.
 4. **Deploy site.** When it's live, rename it: **Site settings → Change site
@@ -102,11 +102,26 @@ Netlify picks it up within seconds. Watch progress under each site's **Deploys**
 
 ## First push to GitHub (if you haven't yet)
 
+> **🔒 Running it for yourself? Use a _private_ repo.**
+> The public JobPilot repo (this one) contains zero personal data by design. But once
+> you set it up for real, you'll generate local files with your CV, profile, and market
+> playbook, and you may be tempted to commit a convenience tweak. Keep your own copy
+> **private** so none of that can ever leak:
+>
+> - **Personal use → private repo.** On GitHub: **New repository → Private**, or fork
+>   this one and flip **Settings → General → Change visibility → Private**. Netlify
+>   deploys from private repos on the free tier just fine.
+> - **Contributing back → public fork.** Only if you're sending a PR upstream, and even
+>   then your personal files stay gitignored.
+>
+> Either way, your secrets (`.env`, `service-account.json`) and `references/` are
+> gitignored and never get committed.
+
 ```bash
 # from the repo root
 git add -A
 npm run audit:secrets        # must print "✓ No forbidden content found."
-git commit -m "Publish JobPilot"
+git commit -m "Set up my JobPilot"
 git push -u origin main
 ```
 

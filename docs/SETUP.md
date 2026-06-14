@@ -86,9 +86,45 @@ firebase deploy --only firestore:rules --project YOUR_PROJECT_ID
 - **Hosted (recommended, works on your phone):** import the repo into
   [Netlify](https://netlify.com) (or Vercel/Firebase Hosting). Base directory `app`,
   build command `npm run build`, publish `app/dist`, and add every `VITE_*` variable
-  from your `.env` in the site's environment settings.
+  from your `.env` in the site's environment settings. Full click-by-click steps for
+  both the app and the landing page are in **[DEPLOY.md](DEPLOY.md)**.
 
 **✓** You can sign in from your phone.
+
+### 6a · Phone notifications (recommended)
+
+This is the part that makes JobPilot feel alive: the moment an agent needs your
+approval, your phone buzzes. It uses Firebase Cloud Messaging (FCM) and the app's
+built-in service worker, no third-party push service.
+
+<img src="screenshots/settings.png" alt="JobPilot Settings: Push notifications and Install controls" width="700" />
+
+1. **Add a Web Push key.** Firebase console → **Project settings → Cloud Messaging →
+   Web Push certificates → Generate key pair**. Copy the key into your `.env` (and your
+   Netlify env vars) as `VITE_FIREBASE_VAPID_KEY`, then redeploy. *(Without this key the
+   Settings toggle stays disabled, push is fully optional.)*
+2. **Install the app on your phone.** Open your hosted URL on your phone and add it to
+   the home screen:
+   - **iOS (Safari):** Share → **Add to Home Screen** (the app's Settings page shows
+     these steps too). On iPhone, web push **only works from the installed app**, not
+     a Safari tab (iOS 16.4+).
+   - **Android (Chrome):** the app offers an **Install** button (Settings → Install
+     JobPilot), or use the browser menu's "Install app".
+3. **Enable push.** Open the installed app → **Settings → Push notifications → Enable**,
+   and allow the permission prompt. This stores your device token in `settings/user`.
+
+**How it's used:** when an agent has something urgent (an approval waiting, an error,
+a deadline) it calls the MCP `send_push` tool, which delivers an FCM message your phone
+shows even when the app is closed. Tapping it opens the dashboard. Less urgent updates
+just appear in the in-app bell 🔔.
+
+**✓ You know it worked when:** right after you tap Enable the button reads
+**"Enabled ✓"**. To prove the whole path end-to-end, once the MCP server is connected
+(step 7) ask your Claude: *"Use the jobpilot MCP `send_push` tool to send me a test
+notification titled 'Hello'."*, your phone should get a notification within seconds.
+
+> Push is optional. If you skip it, everything still works, you'll just rely on the
+> in-app bell instead of phone alerts.
 
 ## 7 · The MCP server (your Claude ↔ your Firestore)
 
