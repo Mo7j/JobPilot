@@ -1,0 +1,40 @@
+# ── Private reference material (never commit) ──────────────────────────────
+/references/
+
+# ── Secrets ─────────────────────────────────────────────────────────────────
+**/.env
+**/.env.*
+!**/.env.example
+**/service-account*.json
+**/*-firebase-adminsdk-*.json
+
+# ── Generated per-user agent files (created by the setup agent, stay local) ─
+agents/_system/PROFILE.md
+agents/_system/CONFIG.md
+agents/cv-creation/references/base_cv.md
+agents/cv-creation/references/cv_design.md
+agents/job-search/knowledge/market_playbook.md
+agents/application-writer/knowledge/screening_answers.md
+agents/*/memory/*
+!agents/*/memory/.gitkeep
+
+# ── Dependencies & builds ───────────────────────────────────────────────────
+node_modules/
+dist/
+dev-dist/
+.netlify/
+*.local
+
+# ── Editor / OS ─────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.log
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# ── Local audit patterns (contain personal strings) ────────────────────────
+scripts/audit-patterns.local.txt
+
+# ── Claude local settings ───────────────────────────────────────────────────
+.claude/settings.local.json

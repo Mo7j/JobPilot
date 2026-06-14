@@ -1,0 +1,17 @@
+{
+  "name": "jobpilot-mcp",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "MCP server that gives Claude read/write access to your JobPilot Firestore.",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node seed-agents.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "dotenv": "^17.4.2",
+    "firebase-admin": "^13.10.0",
+    "zod": "^4.4.3"
+  }
+}

@@ -1,0 +1,236 @@
+@import "tailwindcss";
+
+/* Theme switching: `data-theme` on <html>, set before first paint in index.html */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ── Semantic tokens ──────────────────────────────────────────────────── */
+:root {
+  --surface: #f7f6fc;        /* page background, lavender-tinted */
+  --card: #ffffff;
+  --card-2: #f3f1fb;         /* nested / hover surface */
+  --ink: #1d1a36;            /* primary text, deep indigo, not black */
+  --muted: #6f6c8a;
+  --faint: #a3a0bd;
+  --line: #e8e5f5;           /* borders */
+  --line-strong: #d9d5ef;
+
+  --accent: #6c5ce7;
+  --accent-strong: #5a4bd1;
+  --accent-soft: #efecfd;
+  --accent-ink: #4f41c4;     /* accent-colored text on light surfaces */
+
+  --amber: #f5a623;          /* the mascot-hoodie yellow, brand secondary */
+  --amber-soft: #fdf3df;
+  --amber-ink: #9a6700;
+
+  --success: #1fa971;
+  --success-soft: #e4f7ee;
+  --warn: #e8930c;
+  --warn-soft: #fdf2dd;
+  --danger: #e5484d;
+  --danger-soft: #fdebec;
+  --info: #3b82f6;
+  --info-soft: #e8f1fe;
+
+  --shadow-card: 0 1px 2px rgb(29 26 54 / 0.04), 0 8px 24px -12px rgb(29 26 54 / 0.12);
+  --shadow-pop: 0 2px 6px rgb(29 26 54 / 0.06), 0 20px 48px -16px rgb(29 26 54 / 0.22);
+}
+
+[data-theme="dark"] {
+  --surface: #100e1c;        /* deep indigo night, not pure black */
+  --card: #181527;
+  --card-2: #201c33;
+  --ink: #efedfa;
+  --muted: #9c98b8;
+  --faint: #6a668a;
+  --line: #29253e;
+  --line-strong: #353050;
+
+  --accent: #8b7cff;
+  --accent-strong: #a195ff;
+  --accent-soft: #272145;
+  --accent-ink: #b3a8ff;
+
+  --amber: #fbbf3f;
+  --amber-soft: #322a16;
+  --amber-ink: #fbd27e;
+
+  --success: #34d399;
+  --success-soft: #15291f;
+  --warn: #fbbf24;
+  --warn-soft: #2f2715;
+  --danger: #f87171;
+  --danger-soft: #321b1d;
+  --info: #60a5fa;
+  --info-soft: #16243a;
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px -12px rgb(0 0 0 / 0.5);
+  --shadow-pop: 0 2px 6px rgb(0 0 0 / 0.4), 0 20px 48px -16px rgb(0 0 0 / 0.65);
+}
+
+/* ── Map tokens into Tailwind utilities (bg-surface, text-ink, …) ─────── */
+@theme inline {
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-card-2: var(--card-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-ink: var(--accent-ink);
+  --color-amber: var(--amber);
+  --color-amber-soft: var(--amber-soft);
+  --color-amber-ink: var(--amber-ink);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Sora", "Manrope", ui-sans-serif, sans-serif;
+
+  --radius-card: 1.25rem;
+  --radius-tile: 1rem;
+  --radius-field: 0.75rem;
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────── */
+html {
+  -webkit-tap-highlight-color: transparent;
+  background: var(--surface);
+}
+
+body {
+  @apply bg-surface text-ink font-sans antialiased;
+  font-feature-settings: "ss01";
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+*::-webkit-scrollbar { width: 4px; height: 4px; }
+*::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 999px; }
+*::-webkit-scrollbar-track { background: transparent; }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Reusable primitives ──────────────────────────────────────────────── */
+.card {
+  @apply bg-card border border-line rounded-(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.list-card {
+  @apply bg-card border border-line rounded-2xl;
+  box-shadow: 0 1px 2px rgb(29 26 54 / 0.035);
+}
+
+[data-theme="dark"] .list-card {
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.24);
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-(--radius-field) px-4 py-2.5
+    text-sm font-semibold transition-all duration-150 select-none
+    disabled:opacity-50 disabled:pointer-events-none;
+}
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  @apply btn bg-accent text-white hover:bg-accent-strong;
+  box-shadow: 0 4px 14px -4px var(--accent);
+}
+.btn-ghost {
+  @apply btn bg-transparent text-muted border border-line hover:bg-card-2 hover:text-ink;
+}
+.btn-soft {
+  @apply btn bg-accent-soft text-accent-ink hover:brightness-95 dark:hover:brightness-110;
+}
+.btn-danger-soft {
+  @apply btn bg-danger-soft text-danger hover:brightness-95 dark:hover:brightness-110;
+}
+.btn-success-soft {
+  @apply btn bg-success-soft text-success hover:brightness-95 dark:hover:brightness-110;
+}
+
+.chip {
+  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+}
+
+.input {
+  @apply w-full rounded-(--radius-field) border border-line bg-card px-3.5 py-2.5 text-sm
+    text-ink placeholder:text-faint transition-colors
+    focus:border-accent focus:outline-none;
+}
+
+.label {
+  @apply block text-xs font-semibold text-muted mb-1.5 uppercase tracking-wide;
+}
+
+/* ── Motion ───────────────────────────────────────────────────────────── */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.anim-rise { animation: rise 0.4s cubic-bezier(0.21, 0.9, 0.35, 1) both; }
+
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.anim-float { animation: float-y 4s ease-in-out infinite; }
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); }
+  70% { box-shadow: 0 0 0 8px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.anim-running { animation: pulse-ring 2s ease-out infinite; }
+
+@keyframes agent-running-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 0 color-mix(in srgb, var(--accent) 0%, transparent));
+  }
+  50% {
+    filter: drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 62%, transparent));
+  }
+}
+.anim-agent-running { animation: agent-running-glow 2s ease-in-out infinite; }
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+.skeleton {
+  @apply rounded-lg;
+  background: linear-gradient(90deg, var(--card-2) 25%, var(--line) 50%, var(--card-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
