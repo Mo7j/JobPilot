@@ -68,15 +68,14 @@ the demo, and your email + password gets you into an empty dashboard.
 The rules lock the entire database to your account. This is the real security
 boundary, not the client.
 
-1. Edit `app/firestore.rules`: replace `OWNER_EMAIL@example.com` with your email.
-2. Deploy (one-time CLI install included):
+1. Open **Firebase Console → your project → Firestore Database → Rules** tab.
+2. In `app/firestore.rules`, replace `OWNER_EMAIL@example.com` with your own email.
+3. Copy the **full contents** of `app/firestore.rules` and paste them into the Rules
+   editor, replacing whatever is there.
+4. Click **Publish**.
 
-```bash
-npm install -g firebase-tools
-firebase login
-cd app
-firebase deploy --only firestore:rules --project YOUR_PROJECT_ID
-```
+This is a one-time action — the rules rarely change. `app/firestore.rules` stays the
+source of truth in the repo, so paste from it again if you ever need to update them.
 
 **✓** Firebase console → Firestore → Rules shows your email in the rule.
 

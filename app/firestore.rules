@@ -3,9 +3,8 @@ rules_version = '2';
 // JobPilot single-owner rules.
 //
 // Replace OWNER_EMAIL@example.com with YOUR email (the same one you set in
-// app/.env as VITE_ALLOWED_EMAIL), then deploy:
-//
-//   firebase deploy --only firestore:rules
+// app/.env as VITE_ALLOWED_EMAIL), then paste this into Firebase Console →
+// Firestore → Rules → Publish.
 //
 // This is the real security boundary: only your signed-in account can read
 // or write anything. The client-side email check is convenience, not security.
