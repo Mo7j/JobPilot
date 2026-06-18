@@ -66,10 +66,10 @@ the defaults in `mcp-server/seed-agents.js`:
 
 | slug | name | intervalMinutes | scheduleLabel |
 |---|---|---|---|
-| job-search | Job Search | 60 | Every hour |
-| job-analysis | Job Analysis | 60 | Every hour |
-| cv-creation | CV Creation | 60 | Every hour |
-| application-writer | Application Writer | 60 | Every hour |
+| job-search | Job Search | 300 | Every 5 hours |
+| job-analysis | Job Analysis | 300 | Every 5 hours |
+| cv-creation | CV Creation | 300 | Every 5 hours |
+| application-writer | Application Writer | 300 | Every 5 hours |
 | connection-builder | Connection Builder | 120 | Every 2 hours |
 | career-advisor | Career Advisor | 1440 | Daily at 8 AM |
 | manager | Manager | 720 | 8 AM & 8 PM |

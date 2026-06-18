@@ -9,10 +9,10 @@ in the approval queue until you tap approve in the app.
 | Agent | Cadence | Does |
 |---|---|---|
 | **setup** | once (manual) | Interviews you, generates your profile + unique CV design + market playbook, seeds Firestore, smoke-tests the loop |
-| **job-search** | hourly | Finds new roles on your platforms, filters, creates jobCases |
-| **job-analysis** | hourly | Scores fit 0–100 against YOUR profile, researches the company, writes a PDF report |
-| **cv-creation** | hourly | Asks honest clarifying questions, drafts a tailored 1-page CV (verified), revisions on request |
-| **application-writer** | hourly | Fills application forms completely, screenshots, stops before Submit; submits after your approval |
+| **job-search** | every 5h (group A) | Finds new roles on your platforms, filters, creates jobCases |
+| **job-analysis** | every 5h (group A) | Scores fit 0–100 against YOUR profile, researches the company, writes a PDF report |
+| **cv-creation** | every 5h (group B) | Asks honest clarifying questions, drafts a tailored 1-page CV (verified), revisions on request |
+| **application-writer** | every 5h (group B) | Fills application forms completely, screenshots, stops before Submit; submits after your approval |
 | **connection-builder** | every 2h | Grows your LinkedIn network within hard limits; notes always approval-gated |
 | **career-advisor** | daily | Finds your recurring skill gaps in real market data, recommends high-ROI moves |
 | **manager** | 8 AM + 8 PM | Health checks, quality review, coaches the other agents |
@@ -35,7 +35,9 @@ agents/
 │   ├── SCHEMA.md       #   the Firestore data contract (matches the app)
 │   ├── HEARTBEAT.md    #   live status reporting protocol
 │   ├── INSTRUCTIONS.md #   your in-app instructions override everything
-│   ├── NOTIFICATIONS.md#   when/how agents may ping you
+│   ├── NOTIFICATIONS.md#   when/how agents may ping you (bell = phone push)
+│   ├── REQUESTS.md     #   agents ask you for advice; you reply in the app
+│   ├── FILES.md        #   local-first files, previewable in the dashboard
 │   ├── LEARNING.md     #   the self-improvement loop
 │   ├── PROFILE.template.md  → PROFILE.md (generated, gitignored: YOUR facts)
 │   └── CONFIG.template.md   → CONFIG.md  (generated, gitignored: paths/IDs)

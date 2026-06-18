@@ -19,8 +19,8 @@ instruction set.
 
 ## Key context
 - Shared system files: `<AGENTS_DIR>/_system/`, CONFIG.md (paths/IDs), PROFILE.md
-  (the owner), INSTRUCTIONS.md, HEARTBEAT.md, NOTIFICATIONS.md, LEARNING.md, SCHEMA.md
-- Agent slug (Firebase doc ID): `job-search` · nextRun = lastRun + 60 min
+  (the owner), INSTRUCTIONS.md, HEARTBEAT.md, NOTIFICATIONS.md, REQUESTS.md, LEARNING.md, SCHEMA.md
+- Agent slug (Firebase doc ID): `job-search` · nextRun = lastRun + 300 min (every 5h)
 - Knowledge: `<AGENTS_DIR>/job-search/knowledge/` (market_playbook.md is generated, 
   if missing, stop and tell the owner to run the setup agent)
 

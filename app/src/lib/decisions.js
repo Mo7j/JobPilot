@@ -47,6 +47,20 @@ export async function submitCvAnswers(item, answers) {
   });
 }
 
+/**
+ * Reply to an agent's request for advice. Stores the owner's answer and marks
+ * the request answered + unread-by-agent, so the agent picks it up on its next
+ * run (see agents/_system/REQUESTS.md). Shape is part of the agent contract.
+ */
+export async function replyToAgentRequest(item, reply) {
+  await dataSource.updateDoc('agentRequests', item.id, {
+    status: 'answered',
+    reply: reply.trim(),
+    repliedAt: new Date().toISOString(),
+    readByAgent: false,
+  });
+}
+
 export async function decideAdvice(item, decision) {
   await dataSource.updateDoc('careerAdvice', item.id, {
     status: 'decided',

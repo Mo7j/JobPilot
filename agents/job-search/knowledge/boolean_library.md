@@ -7,7 +7,8 @@ cut rework.
 
 ## LinkedIn job-search URLs
 Pattern: `https://www.linkedin.com/jobs/search/?keywords=<kw>&location=<loc>&f_TPR=<window>&f_E=<exp>`
-- `f_TPR=r604800` = last 7 days · `f_TPR=r86400` = last 24h (right for hourly runs).
+- `f_TPR=r604800` = last 7 days · `f_TPR=r86400` = last 24h · `f_TPR=r43200` = last ~12h
+  (the default for the 5h cadence, overlaps runs with margin; `seenJobs` dedupes the overlap).
 - `f_E=1` internship, `f_E=2` entry, `f_E=3` associate, `f_E=4` mid-senior. Use sparingly, 
   it hides unlabeled posts; better to filter experience manually from the JD text.
 - `location=<country>` (broad) catches more than city-only; rotate both.

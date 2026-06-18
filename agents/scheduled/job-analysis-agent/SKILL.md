@@ -18,8 +18,9 @@ Execute ALL steps in that file, in order (max 3 cases per run).
 
 ## Key context
 - Shared system files: `<AGENTS_DIR>/_system/`, CONFIG.md, PROFILE.md, INSTRUCTIONS.md,
-  HEARTBEAT.md, NOTIFICATIONS.md, LEARNING.md, SCHEMA.md
-- Agent slug: `job-analysis` · nextRun = lastRun + 60 min
-- This agent owns Google Drive auto-setup for job folders.
+  HEARTBEAT.md, NOTIFICATIONS.md, REQUESTS.md, LEARNING.md, SCHEMA.md
+- Agent slug: `job-analysis` · nextRun = lastRun + 300 min (every 5h)
+- Saves the analytics report to the LOCAL job folder (JOBS_DIR is Drive-synced); records
+  `folderPath` + `filePaths.analysis_report`. Local-first, no Drive API upload (`_system/FILES.md`).
 
 Do not skip steps. Do not ask for confirmation. Execute the full run as specified.

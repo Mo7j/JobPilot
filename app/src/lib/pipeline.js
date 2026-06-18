@@ -55,6 +55,46 @@ export const APPROVAL_TYPE_LABELS = {
   career_advice: 'Career advice',
 };
 
+// Human labels + display order for the file keys agents record on a jobCase
+// (jobCase.driveFileUrls / jobCase.filePaths). Used by the file preview UI.
+export const FILE_LABELS = {
+  analysis_report: 'Analysis report',
+  analytics_report: 'Analysis report',
+  job_info: 'Job info',
+  company_research: 'Company research',
+  fit_analysis: 'Fit analysis',
+  ats_keywords: 'ATS keywords',
+  resume: 'Resume (DOCX)',
+  resume_pdf: 'Resume (PDF)',
+  cover_letter: 'Cover letter',
+  application_answers: 'Application answers',
+  application_screenshot: 'Application screenshot',
+  interview_notes: 'Interview notes',
+  connection_strategy: 'Connection strategy',
+};
+
+const FILE_ORDER = Object.keys(FILE_LABELS);
+
+/**
+ * Normalise a jobCase's files into a previewable list. Merges the Drive preview
+ * links (driveFileUrls) with any local paths (filePaths) the agents recorded,
+ * keyed by the file slug, and sorts them into a sensible reading order.
+ */
+export function jobFiles(job) {
+  if (!job) return [];
+  const urls = job.driveFileUrls ?? {};
+  const paths = job.filePaths ?? {};
+  const keys = [...new Set([...Object.keys(urls), ...Object.keys(paths)])];
+  return keys
+    .filter((k) => urls[k] || paths[k])
+    .map((k) => ({ key: k, label: FILE_LABELS[k] ?? k, url: urls[k] ?? null, path: paths[k] ?? null }))
+    .sort((a, b) => {
+      const ai = FILE_ORDER.indexOf(a.key);
+      const bi = FILE_ORDER.indexOf(b.key);
+      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+    });
+}
+
 export const AGENT_ORDER = [
   'job-search',
   'job-analysis',

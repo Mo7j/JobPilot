@@ -8,7 +8,7 @@ const STEPS = [
   {
     n: '01',
     title: 'The crew hunts around the clock',
-    body: 'Every hour, agents sweep your platforms for fresh roles, filter them against your real profile, score the fit 0–100, and research each company, so you only ever see vetted matches.',
+    body: 'Through the day, agents sweep your platforms for fresh roles, filter them against your real profile, score the fit 0–100, and research each company, so you only ever see vetted matches.',
     img: mascotSearch,
   },
   {

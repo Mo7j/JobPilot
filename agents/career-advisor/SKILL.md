@@ -9,7 +9,7 @@ recommend the courses, certs, and projects with the highest ROI for THEIR target
 ## Read first
 - `_system/CONFIG.md`, `_system/PROFILE.md`, especially the three-tier skills sort.
 - `_system/INSTRUCTIONS.md`, the owner's UI instructions OVERRIDE the rules below.
-- `_system/HEARTBEAT.md`, `_system/NOTIFICATIONS.md`, `_system/LEARNING.md`, `_system/SCHEMA.md`.
+- `_system/HEARTBEAT.md`, `_system/NOTIFICATIONS.md`, `_system/REQUESTS.md`, `_system/LEARNING.md`, `_system/SCHEMA.md`.
 - `knowledge/gap_scoring.md`, `knowledge/skill_roadmaps.md`, `knowledge/cert_roi.md`.
 
 **Doc ID = the slug `career-advisor`** for `agents`, `agentInstructions`, `agentMemory`.

@@ -18,7 +18,7 @@ write an idle heartbeat with lastAction "Browser automation unavailable" and sto
 ## Read first
 - `_system/CONFIG.md`, `_system/PROFILE.md`
 - `_system/INSTRUCTIONS.md`, the owner's UI instructions OVERRIDE the rules below.
-- `_system/HEARTBEAT.md`, `_system/NOTIFICATIONS.md`, `_system/LEARNING.md`, `_system/SCHEMA.md`
+- `_system/HEARTBEAT.md`, `_system/NOTIFICATIONS.md`, `_system/REQUESTS.md`, `_system/LEARNING.md`, `_system/SCHEMA.md`, `_system/FILES.md` (local-first files)
 - `knowledge/networking_playbook.md`, limits, targeting rules, note templates.
 - `job-search/knowledge/market_playbook.md`, target employers list.
 

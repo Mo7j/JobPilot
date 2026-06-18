@@ -33,10 +33,10 @@ const db = admin.firestore();
 const { FieldValue } = admin.firestore;
 
 const AGENT_DEFS = [
-  { id: 'job-search', name: 'Job Search', intervalMinutes: 60, scheduleLabel: 'Every hour' },
-  { id: 'job-analysis', name: 'Job Analysis', intervalMinutes: 60, scheduleLabel: 'Every hour' },
-  { id: 'cv-creation', name: 'CV Creation', intervalMinutes: 60, scheduleLabel: 'Every hour' },
-  { id: 'application-writer', name: 'Application Writer', intervalMinutes: 60, scheduleLabel: 'Every hour' },
+  { id: 'job-search', name: 'Job Search', intervalMinutes: 300, scheduleLabel: 'Every 5 hours' },
+  { id: 'job-analysis', name: 'Job Analysis', intervalMinutes: 300, scheduleLabel: 'Every 5 hours' },
+  { id: 'cv-creation', name: 'CV Creation', intervalMinutes: 300, scheduleLabel: 'Every 5 hours' },
+  { id: 'application-writer', name: 'Application Writer', intervalMinutes: 300, scheduleLabel: 'Every 5 hours' },
   { id: 'connection-builder', name: 'Connection Builder', intervalMinutes: 120, scheduleLabel: 'Every 2 hours' },
   { id: 'career-advisor', name: 'Career Advisor', intervalMinutes: 1440, scheduleLabel: 'Daily at 8 AM' },
   { id: 'manager', name: 'Manager', intervalMinutes: 720, scheduleLabel: '8 AM & 8 PM' },
@@ -74,8 +74,12 @@ for (const def of AGENT_DEFS) {
     const data = agentSnap.data();
     const patch = { id: def.id, updatedAt: FieldValue.serverTimestamp() };
     if (data.name == null) patch.name = def.name;
-    if (data.intervalMinutes == null) patch.intervalMinutes = def.intervalMinutes;
-    if (data.scheduleLabel == null) patch.scheduleLabel = def.scheduleLabel;
+    // intervalMinutes + scheduleLabel are seed-owned config (not live counters or
+    // user edits), so always refresh them. This is what lets an existing install
+    // pick up a changed cadence (e.g. the move from hourly to every-5-hours) on
+    // re-seed, instead of staying stuck on the old "Next run" timing.
+    patch.intervalMinutes = def.intervalMinutes;
+    patch.scheduleLabel = def.scheduleLabel;
     if (data.runningSince === undefined) patch.runningSince = null;
     if (data.lastRunDurationSeconds === undefined) patch.lastRunDurationSeconds = null;
     await agentRef.set(patch, { merge: true });

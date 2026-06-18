@@ -21,7 +21,7 @@ Execute ALL steps in that file, in order, Queue B (submit approved) before Queue
 
 ## Key context
 - Shared system files: `<AGENTS_DIR>/_system/`
-- Agent slug: `application-writer` · nextRun = lastRun + 60 min
+- Agent slug: `application-writer` · nextRun = lastRun + 300 min (every 5h)
 - **NEVER click Submit on an unapproved application. NEVER use the OS file picker, 
   resume uploads go through Appendix A of the SKILL.**
 

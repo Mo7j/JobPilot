@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { X, CheckCheck, AlertTriangle, Info, FileCheck, BellRing } from 'lucide-react';
+import { X, CheckCheck, AlertTriangle, Info, FileCheck, BellRing, MessageCircleQuestion } from 'lucide-react';
 import { useNotifications } from '../hooks/useNotifications';
 import { formatRelativeTime } from '../lib/dates';
 import { cn } from '../lib/utils';
@@ -18,10 +18,11 @@ const TYPE_ICON = {
   insight: Info,
   summary: Info,
   file_ready: FileCheck,
+  question: MessageCircleQuestion,
 };
 
 export default function NotificationsPanel({ open, onClose }) {
-  const { notifications, markRead, markAllRead } = useNotifications();
+  const { notifications, unreadCount, markRead, markAllRead } = useNotifications();
   const navigate = useNavigate();
 
   function openNotification(n) {
@@ -57,9 +58,9 @@ export default function NotificationsPanel({ open, onClose }) {
             <header className="flex items-center gap-2 border-b border-line px-5 py-4">
               <BellRing size={18} className="text-accent" />
               <h2 className="font-display font-bold flex-1">Notifications</h2>
-              {notifications.length > 0 && (
+              {unreadCount > 0 && (
                 <button type="button" onClick={markAllRead} className="btn-ghost !px-2.5 !py-1.5 text-xs">
-                  <CheckCheck size={14} /> Clear all
+                  <CheckCheck size={14} /> Mark all read
                 </button>
               )}
               <button type="button" onClick={onClose} className="btn-ghost !p-2" aria-label="Close">
@@ -81,14 +82,20 @@ export default function NotificationsPanel({ open, onClose }) {
                         <button
                           type="button"
                           onClick={() => openNotification(n)}
-                          className="w-full rounded-2xl border border-line bg-card hover:bg-card-2 p-4 text-left transition-colors"
+                          className={cn(
+                            'w-full rounded-2xl border border-line bg-card hover:bg-card-2 p-4 text-left transition-colors',
+                            n.read && 'opacity-60',
+                          )}
                         >
                           <div className="flex items-start gap-3">
                             <span className={cn('rounded-xl p-2', PRIORITY_STYLE[n.priority] ?? PRIORITY_STYLE.normal)}>
                               <Icon size={15} />
                             </span>
                             <div className="min-w-0 flex-1">
-                              <p className="text-sm font-bold leading-snug">{n.title}</p>
+                              <p className="flex items-center gap-1.5 text-sm font-bold leading-snug">
+                                {!n.read && <span className="size-2 shrink-0 rounded-full bg-accent" aria-label="Unread" />}
+                                {n.title}
+                              </p>
                               <p className="mt-0.5 text-xs text-muted leading-relaxed">{n.body}</p>
                               <p className="mt-1.5 text-[11px] font-semibold text-faint">
                                 {n.agentId} · {formatRelativeTime(n.createdAt)}

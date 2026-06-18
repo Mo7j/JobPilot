@@ -7,8 +7,8 @@ notifications/reports.
 
 ## Health thresholds (per agent)
 Read the `agents` collection and check `lastRun` vs expected cadence (`intervalMinutes`):
-- Hourly agents (job-search, job-analysis, cv-creation, application-writer): flag
-  **overdue** if > 2h, **likely stuck** if > 6h.
+- 5-hourly agents (job-search, job-analysis, cv-creation, application-writer): flag
+  **overdue** if > 6h, **likely stuck** if > 11h.
 - connection-builder (2h): flag if > 3h.
 - career-advisor (daily): flag if > 25h.
 - Any agent `status:"running"` for > 30 min → **stuck running** (`runningSince` is the

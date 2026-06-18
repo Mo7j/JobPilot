@@ -33,10 +33,10 @@ happens without your explicit tap in the dashboard.
 | Agent | Cadence | Job |
 |---|---|---|
 | 🧭 **Setup** | once | Interviews you → generates your profile, market playbook, and a **CV design unique to you** |
-| 🔍 **Job Search** | hourly | Finds fresh roles on your platforms, filters against your real profile |
-| 📊 **Job Analysis** | hourly | Scores fit 0–100, researches the company, writes a PDF report |
-| 📄 **CV Creation** | hourly | Drafts a tailored one-page CV, asks you questions instead of inventing facts |
-| ✉️ **Application Writer** | hourly | Fills the whole form, screenshots it, **stops before Submit** |
+| 🔍 **Job Search** | every 5h | Finds fresh roles on your platforms, filters against your real profile |
+| 📊 **Job Analysis** | every 5h | Scores fit 0–100, researches the company, writes a PDF report |
+| 📄 **CV Creation** | every 5h | Drafts a tailored one-page CV, asks you questions instead of inventing facts |
+| ✉️ **Application Writer** | every 5h | Fills the whole form, screenshots it, **stops before Submit** |
 | 🤝 **Connection Builder** | 2-hourly | Grows your LinkedIn network within strict limits; notes always approval-gated |
 | 🎓 **Career Advisor** | daily | Mines market data for the skill gaps actually costing you matches |
 | 🧠 **Manager** | 8 AM + 8 PM | Health checks, quality review, coaches the other agents |

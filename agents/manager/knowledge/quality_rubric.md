@@ -29,8 +29,10 @@ ran). Feeds the coaching loop and the evening report.
 - A skill job-analysis keeps flagging as missing **and** cv-creation keeps asking
   about = high-confidence gap → make sure career-advisor surfaces it.
 - Duplicate jobCases → flag for cleanup.
-- Drive: are job folders + files actually created and linked (`driveFolderUrl`
-  populated)? Silent upload failures lock the owner out of their files, flag loudly.
+- Files (local-first, see `_system/FILES.md`): are job files actually written and recorded
+  in `jobCase.filePaths`? A queued CV/application/report with no `filePaths` entry means a
+  file step silently failed, flag loudly. Drive preview links (`driveFileUrls`) are a
+  best-effort nicety, their absence is fine; missing `filePaths` is not.
 
 ## Output
 Roll findings into the evening report's `highlights` + `coachingGiven` +

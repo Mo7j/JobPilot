@@ -1,6 +1,6 @@
 # Job Analysis Agent
 **Agent ID:** job-analysis
-**Schedule:** Every 1 hour
+**Schedule:** Every 5 hours (Group A, with job-search)
 **Purpose:** Analyze jobs in "found" status, score fit, research companies, write the analytics report, push to approvalQueue.
 **Max cases per run:** 3
 
@@ -10,9 +10,12 @@
 - `_system/CONFIG.md`, paths (JOBS_DIR), MCP prefix, connector availability.
 - `_system/PROFILE.md`, the owner's skills (three honesty tiers), experience, targets.
 - `_system/INSTRUCTIONS.md`, the owner's UI instructions OVERRIDE the rules below.
-- `_system/HEARTBEAT.md`, `_system/NOTIFICATIONS.md`, `_system/LEARNING.md`, `_system/SCHEMA.md`.
+- `_system/HEARTBEAT.md`, `_system/NOTIFICATIONS.md`, `_system/REQUESTS.md`, `_system/LEARNING.md`, `_system/SCHEMA.md`, `_system/FILES.md` (local-first files).
 - `knowledge/fit_scoring_rubric.md`, `knowledge/company_research_playbook.md`, `knowledge/red_flags.md`.
-- **This agent owns Google Drive auto-setup** (Step 4), it's first to create job files.
+- **Files are local-first** (`_system/FILES.md`): the report is saved to the local job
+  folder and reaches the owner's phone via their Drive-synced `JOBS_DIR`, no API upload.
+  Record `folderPath` + `filePaths.analysis_report` so downstream agents and the dashboard
+  find it.
 
 **Doc ID = the slug `job-analysis`** for `agents`, `agentInstructions`, `agentMemory`.
 For `jobCases`: use the `id` field.
@@ -318,30 +321,28 @@ PYEOF
 
 ---
 
-## Step 4: Google Drive (auto-setup + upload)
+## Step 4: Record the local report (+ best-effort Drive preview) — see `_system/FILES.md`
 
-Drive is how the owner reads job files on their phone. If CONFIG.md says Drive is not
-connected: skip uploads, note it in the run report, and recommend connecting it, the
-local JOBS_DIR copy still works.
+JobPilot is **local-first** (read `_system/FILES.md`). The report is saved to the local
+job folder in Step 3 and reaches the owner's phone through their Drive-synced `JOBS_DIR`
+(SETUP § 9a), there is **no Drive API upload**.
 
-**4.1 Ensure the Drive `Jobs/` root exists (auto-setup, no manual step).**
+**4.1 Record the file on the jobCase.** Confirm `analytics_report.pdf` exists in
+`<JOBS_DIR>/[Company] - [Title]/`, then set:
 ```
-mcp__jobpilot__get_document("meta", "googleDrive")
-If missing or setupComplete != true:
-  Search Drive for folder "Jobs" at root; create if not found.
-  mcp__jobpilot__set_document("meta", "googleDrive", {
-    "id": "googleDrive", "setupComplete": true,
-    "rootFolderId": "[id]", "rootFolderUrl": "[webViewLink]" })
+mcp__jobpilot__update_document("jobCases", "[jobCase.id]", {
+  "folderPath": "[Company] - [Title]",
+  "filePaths": { "analysis_report": "<JOBS_DIR>/[Company] - [Title]/analytics_report.pdf" }
+})
 ```
+(Merge `filePaths`; don't clobber keys other agents wrote.)
 
-**4.2 Per-job subfolder.** If `jobCase.driveFolderId` is null, create `[Company] - [Title]`
-under the Jobs root and store `driveFolderId` + `driveFolderUrl` on the jobCase.
-
-**4.3 Upload analytics_report.pdf** with your Google Drive connector's create-file tool
-(base64-encode the file first; set the PDF mime type and disable conversion to Google
-formats). Store the returned link → `jobCase.driveFileUrls.analytics_report`.
-
-If upload fails: log, set `errorMessage`, continue, the local copy is the fallback.
+**4.2 Drive preview link (for the dashboard).** With the Google Drive connector, do a
+**read-only search** for `analytics_report.pdf` in the synced `Jobs/[Company] - [Title]`
+folder and store its `webViewLink` → `jobCase.driveFileUrls.analysis_report`. Quick metadata
+lookup, NOT an upload, it lets the owner preview the PDF inline in the app. If Drive isn't
+connected (or the file isn't visible yet mid-sync), skip it, the app falls back to the local
+path. Never block or error on this.
 
 ---
 
@@ -357,7 +358,7 @@ mcp__jobpilot__add_document("approvalQueue", {
   "title": "[Title], [Company]",
   "summary": "[EMOJI] [APPLY/UNCERTAIN/SKIP], [score]/100\n\n[1-2 sentences: what the company does and why this role is or isn't a fit.]\n\nKey matches: [top 3 matching skills].\nMain gap: [top missing skill or concern].\n\nRecommendation: [2-3 direct sentences, exactly what to do and why, plus framing tips for the CV/cover letter if applying.]",
   "attachedFilePath": "<JOBS_DIR>/[Company] - [Title]/analytics_report.pdf",
-  "driveFileUrl": "[Drive folder URL]",
+  "driveFileUrl": "[driveFileUrls.analysis_report if you got one in 4.2, else null]",
   "createdAt": "[ISO 8601]"
 })
 ```
@@ -409,7 +410,7 @@ mcp__jobpilot__update_document("jobCases", "[jobCase.id]", {
 type: "approval_needed", priority: "high",
 title: "Analysis ready, [Company] [Title]",
 body: "Fit [score]/100, recommend [rec]. Tap to review.",
-actionUrl: "[jobCase.driveFolderUrl or /approvals]",
+actionUrl: "/approvals",
 dedupeKey: "analysis-ready-[jobCase.id]", jobCaseId: "[jobCase.id]"
 ```
 
@@ -434,7 +435,7 @@ Did the owner's approvals/rejections match your fit scores? Append the signal to
 
 ## Step 10: Close the heartbeat (see `_system/HEARTBEAT.md`)
 
-END heartbeat (idle, lastRun, nextRun +60 min, duration, runCount+1, pendingApprovals,
+END heartbeat (idle, lastRun, nextRun +300 min, duration, runCount+1, pendingApprovals,
 concrete lastAction) + append timestamp to `agentInstructions/job-analysis.readBy`.
 On failure: ERROR heartbeat + one `error` notification.
 
@@ -444,7 +445,7 @@ On failure: ERROR heartbeat + one `error` notification.
 - JD fetch fails → retry once; still failing → set the case back to "found" with
   errorMessage, log, continue with the next case.
 - 3 consecutive fetch failures → `error` notification "unable to fetch JDs".
-- Drive upload fails → non-blocking; log and continue.
+- Drive preview lookup fails (4.2) → non-blocking; log and continue, the report is local.
 - Never leave a case stuck in "analyzing".
 
 ## Hard Rules

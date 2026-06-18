@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   Check,
   X,
-  ExternalLink,
+  Eye,
   FileText,
   MessageCircleQuestion,
   ClipboardCheck,
@@ -13,6 +13,7 @@ import { APPROVAL_TYPE_LABELS, parseQuestions } from '../../lib/pipeline';
 import { decideApproval, submitCvAnswers } from '../../lib/decisions';
 import { formatRelativeTime } from '../../lib/dates';
 import { cn } from '../../lib/utils';
+import FilePreviewModal from '../FilePreviewModal';
 
 const TYPE_META = {
   analysis: { icon: ClipboardCheck, tone: 'bg-info-soft text-info' },
@@ -26,6 +27,8 @@ export default function ApprovalCard({ item, jobCase }) {
   const [busy, setBusy] = useState(false);
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState('');
+  const [previewing, setPreviewing] = useState(false);
+  const hasFile = item.driveFileUrl || item.attachedFilePath;
 
   const isQuestions = item.type === 'cv_questions';
   const questions = isQuestions
@@ -58,22 +61,21 @@ export default function ApprovalCard({ item, jobCase }) {
   const body = (
     <>
       <h3 className="font-bold leading-snug">{item.title}</h3>
-      {(jobCase || item.driveFileUrl) && (
+      {(jobCase || hasFile) && (
         <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
           {jobCase && (
             <p className="text-xs text-muted">
               {jobCase.company}, {jobCase.title}
             </p>
           )}
-          {item.driveFileUrl && (
-            <a
-              href={item.driveFileUrl}
-              target="_blank"
-              rel="noreferrer"
+          {hasFile && (
+            <button
+              type="button"
+              onClick={() => setPreviewing(true)}
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent-ink hover:underline"
             >
-              <ExternalLink size={13} /> Open attached file
-            </a>
+              <Eye size={13} /> Preview file
+            </button>
           )}
         </div>
       )}
@@ -193,6 +195,17 @@ export default function ApprovalCard({ item, jobCase }) {
             </button>
           </div>
         </div>
+      )}
+
+      {previewing && (
+        <FilePreviewModal
+          file={{
+            label: APPROVAL_TYPE_LABELS[item.type] ?? item.title,
+            url: item.driveFileUrl ?? null,
+            path: item.attachedFilePath ?? null,
+          }}
+          onClose={() => setPreviewing(false)}
+        />
       )}
     </article>
   );

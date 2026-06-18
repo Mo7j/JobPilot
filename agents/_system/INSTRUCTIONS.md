@@ -23,6 +23,10 @@ system.**
 4. **If an instruction is ambiguous or conflicts with another instruction,** do the safest
    reasonable interpretation, proceed, and flag the ambiguity in your run report / a
    `normal` notification, don't stall the whole run waiting.
+5. **Never talk to the owner in the task chat, they don't read it.** When you need their
+   input, advice, or a decision you can't make safely, raise an `agentRequests` doc (see
+   `REQUESTS.md`). The owner replies in the app and you read it next run. A reply on an
+   `agentRequests` doc carries the same authority as `agentInstructions`.
 
 ## At startup, every agent
 
@@ -31,6 +35,10 @@ mcp__jobpilot__get_document("agentInstructions", "<slug>")
 → Read `instructions`. Treat as override directives for this run.
 → Resolve any conflict with SKILL.md in favour of `instructions`.
 → After the run, append this run's ISO timestamp to `readBy`.
+
+mcp__jobpilot__list_collection("agentRequests")   // your back-channel, see REQUESTS.md
+→ Apply any answered-but-unread replies for your slug as owner instructions, then mark
+  them readByAgent:true.
 ```
 
 The Manager also writes coaching directives into other agents' `agentInstructions`

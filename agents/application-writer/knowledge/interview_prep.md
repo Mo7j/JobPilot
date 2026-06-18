@@ -2,8 +2,9 @@
 
 When a case reaches "applied", generate `interview_notes.md` for it: likely questions
 for *this* role + the owner's honest, prepared answers and stories. Pull from
-`_system/PROFILE.md` / `base_cv.md`. Upload to Drive so the owner can revise on their
-phone.
+`_system/PROFILE.md` / `base_cv.md`. Save it to the **local** job folder and record
+`filePaths.interview_notes` (local-first, see `_system/FILES.md`); the synced JOBS_DIR
+makes it readable on the owner's phone, no Drive API upload.
 
 ## STAR stories
 Build 2–4 reusable STAR stories from the owner's strongest base_cv.md entries

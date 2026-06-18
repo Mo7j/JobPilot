@@ -44,7 +44,7 @@ Key collections:
 2. The app renders it; the owner taps approve/reject (with a reason).
 3. The app writes the decision AND advances the linked `jobCase.status` via
    `APPROVAL_NEXT_STATUS` (`app/src/lib/decisions.js`).
-4. The next agent's hourly query picks up the new status. The reason text feeds the
+4. The next agent's scheduled query picks up the new status. The reason text feeds the
    agents' learning loop.
 
 No agent ever performs an irreversible action from an unapproved state; the queries

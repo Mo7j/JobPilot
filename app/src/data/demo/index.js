@@ -25,28 +25,28 @@ const agents = [
     lastRun: hoursAgo(0.4), nextRun: inHours(0.6), runningSince: null,
     lastRunDurationSeconds: 312, runCount: 168, errorCount: 2, pendingApprovals: 0,
     lastAction: 'Found 3 new roles on LinkedIn; skipped 11 (seniority or location).',
-    errorMessage: '', intervalMinutes: 60, scheduleLabel: 'Every hour',
+    errorMessage: '', intervalMinutes: 300, scheduleLabel: 'Every 5 hours',
   },
   {
     id: 'job-analysis', name: 'Job Analysis', status: 'running', enabled: true,
     lastRun: hoursAgo(1.2), nextRun: inHours(0.2), runningSince: hoursAgo(0.05),
     lastRunDurationSeconds: 422, runCount: 149, errorCount: 1, pendingApprovals: 1,
     lastAction: 'Analyzing Datawerk, Frontend Engineer (2 of 3 this run).',
-    errorMessage: '', intervalMinutes: 60, scheduleLabel: 'Every hour',
+    errorMessage: '', intervalMinutes: 300, scheduleLabel: 'Every 5 hours',
   },
   {
     id: 'cv-creation', name: 'CV Creation', status: 'idle', enabled: true,
     lastRun: hoursAgo(0.9), nextRun: inHours(0.4), runningSince: null,
     lastRunDurationSeconds: 514, runCount: 121, errorCount: 0, pendingApprovals: 2,
     lastAction: 'Drafted a tailored one-page CV for Northwind Labs; queued for review.',
-    errorMessage: '', intervalMinutes: 60, scheduleLabel: 'Every hour',
+    errorMessage: '', intervalMinutes: 300, scheduleLabel: 'Every 5 hours',
   },
   {
     id: 'application-writer', name: 'Application Writer', status: 'idle', enabled: true,
     lastRun: hoursAgo(1.5), nextRun: inHours(0.5), runningSince: null,
     lastRunDurationSeconds: 388, runCount: 96, errorCount: 1, pendingApprovals: 1,
     lastAction: 'Filled the Lumen Web application form and stopped before submit.',
-    errorMessage: '', intervalMinutes: 60, scheduleLabel: 'Every hour',
+    errorMessage: '', intervalMinutes: 300, scheduleLabel: 'Every 5 hours',
   },
   {
     id: 'connection-builder', name: 'Connection Builder', status: 'idle', enabled: true,
@@ -87,6 +87,12 @@ const jobCases = [
       'Strong match (86/100). The stack is React 18 + TypeScript + Tailwind; Jane has all three from her bootcamp capstone and freelance work. Role is explicitly open to 0–2 years of experience. Design-system focus matches her component-library side project. Risk: the JD mentions "occasional on-call" without detail.',
     companyResearch:
       'Northwind Labs (fictional) builds analytics tooling for e-commerce, ~120 people, Series B. Engineering blog shows a healthy review culture. Glassdoor-style sentiment: positive on mentorship.',
+    folderPath: 'Jobs/Northwind Labs - Frontend Developer',
+    filePaths: {
+      analysis_report: 'Jobs/Northwind Labs - Frontend Developer/analytics_report.pdf',
+      resume_pdf: 'Jobs/Northwind Labs - Frontend Developer/resume.pdf',
+      resume: 'Jobs/Northwind Labs - Frontend Developer/resume.docx',
+    },
     agentLog: [
       { timestamp: daysAgo(3), agentId: 'job-search', message: 'Found on LinkedIn (posted 6h earlier).' },
       { timestamp: daysAgo(2.8), agentId: 'job-analysis', message: 'Scored 86/100, queued for your approval.' },
@@ -120,6 +126,13 @@ const jobCases = [
     companyResearch: 'Lumen Web (fictional) is a 40-person remote-first web agency, EU clients, public salary bands.',
     applicationText:
       'Cover letter drafted: leads with the accessibility redesign she shipped for a bakery client, maps her React/Next.js experience to their client roster, 240 words.',
+    folderPath: 'Jobs/Lumen Web GmbH - Frontend Engineer',
+    filePaths: {
+      analysis_report: 'Jobs/Lumen Web GmbH - Frontend Engineer/analytics_report.pdf',
+      resume_pdf: 'Jobs/Lumen Web GmbH - Frontend Engineer/resume.pdf',
+      application_screenshot: 'Jobs/Lumen Web GmbH - Frontend Engineer/application_filled.png',
+      cover_letter: 'Jobs/Lumen Web GmbH - Frontend Engineer/cover_letter.pdf',
+    },
     agentLog: [
       { timestamp: daysAgo(6), agentId: 'job-search', message: 'Found on StepStone.' },
       { timestamp: daysAgo(5.5), agentId: 'job-analysis', message: 'Scored 81/100, approved by you.' },
@@ -139,6 +152,8 @@ const jobCases = [
     analysisReport:
       'Decent match (74/100). Strong on core JS/React; WebGL is a gap but listed as nice-to-have. Small team means broad exposure, good growth for a junior. Studio work can mean deadline crunches.',
     companyResearch: 'PixelForge (fictional) is a 15-person digital studio doing award-style marketing sites.',
+    folderPath: 'Jobs/PixelForge Studio - Web Developer',
+    filePaths: { analysis_report: 'Jobs/PixelForge Studio - Web Developer/analytics_report.pdf' },
     agentLog: [
       { timestamp: hoursAgo(9), agentId: 'job-search', message: 'Found on LinkedIn.' },
       { timestamp: hoursAgo(6), agentId: 'job-analysis', message: 'Scored 74/100, queued for your approval.' },
@@ -278,7 +293,7 @@ const approvalQueue = [
     title: 'CV ready: Northwind Labs, Frontend Developer',
     summary:
       'One-page CV tailored to the design-system focus: leads with the component-library project, mirrors JD keywords (React, TypeScript, Tailwind, testing-library). PDF verified at exactly 1 page.',
-    driveFileUrl: 'https://example.com/drive/northwind-resume.pdf',
+    attachedFilePath: 'Jobs/Northwind Labs - Frontend Developer/resume.pdf',
     createdAt: hoursAgo(1),
   },
   {
@@ -297,7 +312,7 @@ const approvalQueue = [
     title: 'Application filled: Lumen Web GmbH (not submitted)',
     summary:
       'Form completed on their careers portal: contact details, CV uploaded (PDF), cover letter pasted, screening answers (remote OK, EU work authorization confirmed, notice period 2 weeks). Screenshot attached. Will submit only after your approval.',
-    driveFileUrl: 'https://example.com/drive/lumen-form-screenshot.png',
+    attachedFilePath: 'Jobs/Lumen Web GmbH - Frontend Engineer/application_filled.png',
     createdAt: hoursAgo(1.5),
   },
   {
@@ -305,6 +320,7 @@ const approvalQueue = [
     title: 'Fit 74/100: PixelForge Studio, Web Developer',
     summary:
       'Recommend applying. Core JS/React strong; WebGL is a nice-to-have gap. Small creative studio = broad exposure. Full report and company research attached to the case.',
+    attachedFilePath: 'Jobs/PixelForge Studio - Web Developer/analytics_report.pdf',
     createdAt: hoursAgo(6),
   },
   {
@@ -362,6 +378,27 @@ const notifications = [
     title: 'Application submitted: Velo Systems',
     body: 'Submitted after your approval. Interview notes file created.',
     actionUrl: '/applications', jobCaseId: 'jc-07', read: true, createdAt: daysAgo(1),
+  },
+];
+
+/* ── agentRequests (agent → owner questions / ideas) ─────────────────── */
+const agentRequests = [
+  {
+    id: 'req-01', agentId: 'job-search', status: 'open', jobCaseId: null,
+    title: 'Should I widen the search to Munich?',
+    question:
+      'Berlin + remote-EU is running thin this week, only 3 new roles. I found a cluster of strong junior React roles in Munich. Want me to include Munich (hybrid) for the next few runs, or keep the current scope?',
+    context: 'Your instructions say "prefer Berlin and remote-EU". This would be a temporary widening, not a permanent change.',
+    reply: null, repliedAt: null, readByAgent: false, createdAt: hoursAgo(2),
+  },
+  {
+    id: 'req-02', agentId: 'cv-creation', status: 'answered', jobCaseId: 'jc-12',
+    title: 'Phrasing for the motion-design hobby work',
+    question:
+      'For the Acme Design Engineer CV, can I frame your Framer Motion hobby projects as "production animation work", or should I keep them under a "Side projects" heading to stay honest?',
+    context: null,
+    reply: 'Keep it under Side projects, but lead with the most polished one. Don’t call it production.',
+    repliedAt: hoursAgo(4), readByAgent: true, createdAt: hoursAgo(6),
   },
 ];
 
@@ -514,6 +551,7 @@ export function buildDemoData() {
   put('agents', agents);
   put('jobCases', jobCases);
   put('approvalQueue', approvalQueue);
+  put('agentRequests', agentRequests);
   put('notifications', notifications);
   put('agentReports', agentReports);
   put('careerAdvice', careerAdvice);

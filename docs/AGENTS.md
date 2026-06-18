@@ -24,31 +24,32 @@ in Firestore and writes a smoke-test notification.
 later document honest.
 
 ## 🔍 Job Search, `agents/job-search/`
-**Runs:** hourly. **Needs:** Claude in Chrome for LinkedIn (degrades to fetch-only without).
+**Runs:** every 5h (group A, with job-analysis). **Needs:** Claude in Chrome for LinkedIn (degrades to fetch-only without).
 **Reads:** `searchConfig` from its memory, your market playbook, your work-auth constraints.
 **Writes:** new `jobCases` (status `found`), weekly `trends`, run logs.
 **Guarantees:** dedupes by URL and company+title; pauses itself when 10+ approvals
 are waiting; never contacts anyone.
 
 ## 📊 Job Analysis, `agents/job-analysis/`
-**Runs:** hourly, max 3 cases. **Owns** Google Drive folder auto-setup.
+**Runs:** every 5h (group A, with job-search), max 3 cases.
 **Reads:** `found` cases, the live JD, the web (company research), your profile tiers.
-**Writes:** fit score 0–100 + recommendation, `analytics_report.pdf` (5 sections) to
-your job folder + Drive, an `analysis` approval item.
+**Writes:** fit score 0–100 + recommendation, `analytics_report.pdf` (5 sections) saved to
+your local job folder (which you keep synced to Drive, so it reaches your phone, no API
+upload), and an `analysis` approval item.
 **Your part:** approve → the case moves to CV stage; reject → closed, and your reason
 recalibrates the scoring rubric over time.
 
 ## 📄 CV Creation, `agents/cv-creation/`
-**Runs:** hourly, three passes (questions → drafts → revisions).
+**Runs:** every 5h (group B, with application-writer), three passes (questions → drafts → revisions).
 **Reads:** approved cases, your `base_cv.md` + unique `cv_design.md`, ATS keywords.
 **Writes:** `cv_questions` items when honesty requires your input; `resume.docx` +
-`resume.pdf` (1 page, verified with pdfinfo) to the job folder + Drive; a `cv`
-approval item.
+`resume.pdf` (1 page, verified with pdfinfo) to your local job folder (synced to Drive,
+no API upload); a `cv` approval item.
 **Guarantees:** never invents experience; never adds skills you haven't confirmed;
 revisions saved as v2/v3, approved files never overwritten.
 
 ## ✉️ Application Writer, `agents/application-writer/`
-**Runs:** hourly, two queues, submit approved first, then fill new.
+**Runs:** every 5h (group B, with cv-creation), two queues, submit approved first, then fill new.
 **Reads:** CV-approved cases, your screening answers, the live application form.
 **Writes:** the filled form (browser), a screenshot, an `application` approval item;
 after your approval, the actual submission, a tracker row, and interview notes.

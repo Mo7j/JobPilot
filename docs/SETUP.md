@@ -173,6 +173,29 @@ In your Claude (claude.ai settings → connectors / extensions):
 
 **✓** Claude can open a webpage in your Chrome and list files in your Drive.
 
+### 9a · Sync your Jobs folder to Drive (recommended)
+
+JobPilot is **local-first**: every file the crew makes, analysis reports, tailored CVs,
+cover letters, application screenshots, interview notes, is written to your `JOBS_DIR`
+(the `Jobs/` folder the setup agent configures in the next step). No file is ever uploaded
+through the Drive API; the agents hand files to each other by local path. If that local
+folder lives inside your Google Drive, everything the crew drops there shows up on your
+phone automatically, and the dashboard can **preview each file inline** (open a job → Files,
+or tap "Preview file" on an approval) using Google Drive's viewer.
+
+1. Install **Google Drive for desktop** ([download](https://www.google.com/drive/download/))
+   and sign in with the same Google account.
+2. Pick (or make) a folder that Drive keeps synced, e.g. `…/My Drive/JobPilot/Jobs`.
+3. In the next step, when the setup agent asks where to keep job files, give it **that
+   synced path** as your `JOBS_DIR`. (Already set up? Move your existing `Jobs/` folder
+   inside the synced Drive folder and update `JOBS_DIR` in `agents/_system/CONFIG.md`.)
+
+**✓ You know it worked when:** dropping a test file into that local folder makes it appear
+in the Google Drive app on your phone within a minute.
+
+> Optional but recommended. Skip it and files still save locally on the machine the agents
+> run on, the dashboard then shows each file's path instead of an inline preview.
+
 ## 10 · Run the setup agent 🧭
 
 The personal part. In Claude (with the repo accessible and the MCP server connected):
@@ -198,12 +221,16 @@ replace `<AGENTS_DIR>` in the wrappers with your path, then create the schedules
 
 | Schedule | Agents |
 |---|---|
-| Hourly (staggered) | job-search, job-analysis, cv-creation, application-writer |
+| Every 5h, group A (hours 0,5,10,15,20) | job-search (:00), job-analysis (:15) |
+| Every 5h, group B (hours 2,7,12,17,22) | cv-creation (:30), application-writer (:45) |
 | Every 2 hours | connection-builder |
 | Daily 08:00 | career-advisor, manager (morning) |
 | Daily 20:00 | manager (evening) |
 
-**✓ Final checkpoint:** within an hour of the first job-search run, new job cases
+The two groups are offset by ~2.5h on purpose, so all four don't run in the same 5-hour
+usage window and exhaust it (`agents/scheduled/README.md` explains the split).
+
+**✓ Final checkpoint:** within ~5 hours of the first job-search run, new job cases
 appear on your Applications board, and the first approval request lands in your
 inbox shortly after. From here on, your job search runs itself and waits for your
 taps.
@@ -225,3 +252,29 @@ taps.
 | Agents run but never touch LinkedIn/forms | Claude in Chrome not connected | step 9; agents log the degradation in their reports |
 
 Still stuck? Open an issue with the step number and the exact error.
+
+---
+
+## Already running JobPilot? Updating without losing your data
+
+A code update never touches your data, **your profile, jobs, approvals, and settings live
+in your own Firebase**, not in the repo. Pulling a new version only changes the app, the
+agent instructions, and the MCP server. So you can update safely:
+
+1. **Get the new code.** From your clone: `git pull` (or, if you forked, pull upstream into
+   your fork). Then `npm install` from the repo root in case dependencies changed.
+2. **Redeploy the app.** If it's on Netlify/Vercel and linked to your repo, the push
+   redeploys it automatically. Local? Just restart `npm run dev:app`. **No env vars change.**
+3. **Re-seed the agents to pick up new defaults.** `cd mcp-server && npm run seed`. This is
+   non-destructive, it preserves your run counts, status, and any instructions you've
+   written, and only refreshes config like the schedule cadence (e.g. the move from hourly
+   to **every 5 hours**). Then update your cron/scheduled tasks to the new cadence in
+   [agents/scheduled/README.md](../agents/scheduled/README.md) (two groups, ~2.5h apart).
+4. **Restart Claude** (Desktop) or your headless runners so they reload the updated
+   `agents/` and `mcp-server/` files.
+5. **Security rules:** only re-paste `app/firestore.rules` if a release note says they
+   changed; a normal update doesn't touch them.
+
+You do **not** re-run the setup agent, and you don't lose anything. New collections used by
+new features (e.g. `agentRequests`, the agent → owner question channel) are created
+automatically the first time an agent or the app writes to them, nothing to provision.

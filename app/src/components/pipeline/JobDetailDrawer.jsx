@@ -8,10 +8,12 @@ import {
   FileText,
   Building2,
   ListChecks,
+  FolderOpen,
 } from 'lucide-react';
-import { scoreTone, stageForStatus } from '../../lib/pipeline';
+import { scoreTone, stageForStatus, jobFiles } from '../../lib/pipeline';
 import { formatRelativeTime, formatDateTime } from '../../lib/dates';
 import { cn } from '../../lib/utils';
+import FileLinks from '../FileLinks';
 
 function Section({ icon: Icon, title, children }) {
   return (
@@ -25,6 +27,7 @@ function Section({ icon: Icon, title, children }) {
 }
 
 export default function JobDetailDrawer({ job, onClose }) {
+  const files = jobFiles(job);
   return (
     <AnimatePresence>
       {job && (
@@ -90,6 +93,12 @@ export default function JobDetailDrawer({ job, onClose }) {
             <div className="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-6">
               {job.searchSummary && (
                 <p className="rounded-xl bg-card-2 px-4 py-3 text-sm leading-relaxed">{job.searchSummary}</p>
+              )}
+
+              {files.length > 0 && (
+                <Section icon={FolderOpen} title="Files">
+                  <FileLinks files={files} />
+                </Section>
               )}
 
               {job.analysisReport && (

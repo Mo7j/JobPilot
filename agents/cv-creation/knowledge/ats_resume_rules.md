@@ -28,8 +28,8 @@ iCIMS) **and** reads well to a human. Generated with python-docx per
 
 ## File output
 - Produce **both** `resume.docx` (editable) **and** `resume.pdf` (formatting locked,
-  best for phone review), upload both to Drive. Submit `.docx` unless the posting
-  demands PDF.
+  best for phone review), saved to the **local** job folder (local-first, see
+  `_system/FILES.md`, no Drive API upload). Submit `.docx` unless the posting demands PDF.
 - The PDF must be **text-selectable** (real PDF conversion, not a scan/image).
 - **Exactly one page** (unless the market playbook says otherwise), verify with
   pdfinfo; adjust spacing/margins, never shrink below 10pt body.

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   LogOut,
   Moon,
@@ -12,8 +12,8 @@ import GitHubIcon from '../components/GitHubIcon';
 import InstallApp from '../components/InstallApp';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../hooks/useTheme';
-import { dataSource, resetDemo } from '../data';
-import { getMessagingInstance } from '../firebase';
+import { resetDemo } from '../data';
+import { enablePush as enablePushFlow, pushAlreadyEnabled } from '../lib/push';
 import { vapidKey, firebaseConfig, isDemoMode, repoUrl } from '../config';
 import { cn } from '../lib/utils';
 
@@ -35,33 +35,20 @@ function Row({ icon: Icon, title, hint, children }) {
 export default function Settings() {
   const { user, signOut, isDemo } = useAuth();
   const { theme, toggle } = useTheme();
-  const [pushState, setPushState] = useState('idle'); // idle | busy | on | unsupported | error
+  // Reflect the real OS-level permission on load: if push was enabled in a
+  // previous session the button shows "Enabled ✓" instead of resetting to
+  // "Enable". (The token itself is refreshed app-wide on every open, see
+  // usePushSync.)
+  const [pushState, setPushState] = useState(() => (pushAlreadyEnabled() ? 'on' : 'idle'));
   const [demoResetDone, setDemoResetDone] = useState(false);
+
+  useEffect(() => {
+    if (pushAlreadyEnabled()) setPushState('on');
+  }, []);
 
   async function enablePush() {
     setPushState('busy');
-    try {
-      const messaging = await getMessagingInstance();
-      if (!messaging || !vapidKey) {
-        setPushState('unsupported');
-        return;
-      }
-      const permission = await Notification.requestPermission();
-      if (permission !== 'granted') {
-        setPushState('error');
-        return;
-      }
-      const { getToken } = await import('firebase/messaging');
-      const encoded = btoa(JSON.stringify(firebaseConfig));
-      const registration = await navigator.serviceWorker.register(
-        `/firebase-messaging-sw.js?config=${encodeURIComponent(encoded)}`,
-      );
-      const token = await getToken(messaging, { vapidKey, serviceWorkerRegistration: registration });
-      await dataSource.setDoc('settings', 'user', { fcmToken: token });
-      setPushState('on');
-    } catch {
-      setPushState('error');
-    }
+    setPushState(await enablePushFlow());
   }
 
   return (

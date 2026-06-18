@@ -264,7 +264,7 @@ export default function Agents() {
   if (agents.length === 0) {
     return (
       <EmptyState
-        image="/mascot-point.png"
+        image="/sitting.png"
         title="No agents registered yet"
         hint="Run the setup agent in Claude (step 10 in docs/SETUP.md) - it interviews you, seeds the crew, and they'll report in here."
       />

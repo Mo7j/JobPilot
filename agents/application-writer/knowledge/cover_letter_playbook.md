@@ -29,6 +29,7 @@ company (see `tone_matrix.md`). Pull facts only from `_system/PROFILE.md` / `bas
   structure/phrasing in `agentMemory.successfulTemplates` and reuse for similar roles.
 
 ## Output
-Write `cover_letter.docx` (+ `.pdf` for mobile) into the job folder; upload both to
-Drive and record the links. Everything waits for the owner's approval before being
-sent anywhere.
+Write `cover_letter.docx` (+ `.pdf` for mobile) into the **local** job folder and record
+them in `jobCase.filePaths.cover_letter` (local-first, see `_system/FILES.md`, no Drive API
+upload; the synced JOBS_DIR delivers them). Everything waits for the owner's approval before
+being sent anywhere.

@@ -9,7 +9,7 @@ rest of the crew.
 ## Read first
 - `_system/CONFIG.md`, `_system/PROFILE.md`
 - `_system/INSTRUCTIONS.md`, the owner's UI instructions OVERRIDE the rules below.
-- `_system/HEARTBEAT.md`, `_system/NOTIFICATIONS.md`, `_system/LEARNING.md`, `_system/SCHEMA.md`.
+- `_system/HEARTBEAT.md`, `_system/NOTIFICATIONS.md`, `_system/REQUESTS.md`, `_system/LEARNING.md`, `_system/SCHEMA.md`.
 - `knowledge/orchestration_playbook.md` (health/flow), `knowledge/quality_rubric.md`
   (evening review), `knowledge/coaching_playbook.md` (LEARNING §B), `knowledge/reporting.md`.
 
@@ -31,8 +31,8 @@ Enable check + START heartbeat. Read instructions + memory.
 ```
 mcp__jobpilot__list_collection("agents")
 ```
-- Hourly agents (job-search, job-analysis, cv-creation, application-writer):
-  lastRun > 2h → "overdue"; > 6h → "likely stuck".
+- 5-hourly agents (job-search, job-analysis, cv-creation, application-writer):
+  lastRun > 6h → "overdue"; > 11h → "likely stuck".
 - connection-builder (2h cadence): flag if > 3h. career-advisor (daily): flag if > 25h.
 - Any agent `status == "running"` for > 30 minutes → "stuck running".
 

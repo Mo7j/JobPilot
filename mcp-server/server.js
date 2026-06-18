@@ -51,7 +51,27 @@ admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 const db = admin.firestore();
 
 const COLLECTIONS =
-  'jobCases | approvalQueue | agents | agentInstructions | agentMemory | agentReports | notifications | trends | systemLogs | careerAdvice | jobs | meta | settings';
+  'jobCases | approvalQueue | agentRequests | agents | agentInstructions | agentMemory | agentReports | notifications | trends | systemLogs | careerAdvice | jobs | meta | settings';
+
+// Best-effort push to the owner's device. Reads the FCM token the app stores in
+// settings/user; silently no-ops if push was never enabled. Used by send_push AND
+// fired automatically for every notifications doc, so the in-app bell and the
+// phone push stay one and the same (every bell item is also a push).
+async function pushToOwner({ title, body, data }) {
+  try {
+    const settingsSnap = await db.collection('settings').doc('user').get();
+    const token = settingsSnap.data()?.fcmToken;
+    if (!token) return { ok: false, reason: 'no-token' };
+    const stringData = {};
+    for (const [k, v] of Object.entries({ title, body, ...(data ?? {}) })) {
+      if (v != null) stringData[k] = String(v);
+    }
+    const id = await admin.messaging().send({ token, data: stringData });
+    return { ok: true, id };
+  } catch (err) {
+    return { ok: false, reason: err?.message ?? String(err) };
+  }
+}
 
 // Serialize Firestore Timestamps to full ISO strings so agents can do time math.
 function serialize(val) {
@@ -113,7 +133,24 @@ server.tool(
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
-    return { content: [{ type: 'text', text: `Created document ${ref.id} in ${collection}` }] };
+
+    // Every notification is also a phone push, so the bell and push are the same
+    // signal. No need for agents to call send_push separately.
+    let pushNote = '';
+    if (collection === 'notifications') {
+      const push = await pushToOwner({
+        title: data.title,
+        body: data.body,
+        data: {
+          ...(data.actionUrl ? { actionUrl: data.actionUrl } : {}),
+          ...(data.jobCaseId ? { jobCaseId: data.jobCaseId } : {}),
+          ...(data.type ? { type: data.type } : {}),
+        },
+      });
+      pushNote = push.ok ? ' (push sent)' : ` (push skipped: ${push.reason})`;
+    }
+
+    return { content: [{ type: 'text', text: `Created document ${ref.id} in ${collection}${pushNote}` }] };
   },
 );
 
@@ -170,16 +207,15 @@ server.tool(
 // ── TOOL: send_push ──
 server.tool(
   'send_push',
-  "Send a push notification to the owner's device via FCM. Reads the FCM token from settings/user (the owner enables push in the app's Settings). Use for urgent items: approvals waiting, errors, deadlines.",
+  "Send a standalone push to the owner's device via FCM. NOTE: every notifications doc you add already auto-sends a matching push, so you normally do NOT need this, write a notifications doc instead (it shows in the bell AND pushes). Use this only for a one-off push you deliberately don't want recorded in the bell. Reads the FCM token from settings/user (the owner enables push in the app's Settings).",
   {
     title: z.string().describe('Notification title'),
     body: z.string().describe('Notification body text'),
     data: z.record(z.string()).optional().describe('Optional key/value payload'),
   },
   async ({ title, body, data }) => {
-    const settingsSnap = await db.collection('settings').doc('user').get();
-    const token = settingsSnap.data()?.fcmToken;
-    if (!token) {
+    const push = await pushToOwner({ title, body, data });
+    if (!push.ok && push.reason === 'no-token') {
       return {
         content: [
           {
@@ -189,8 +225,10 @@ server.tool(
         ],
       };
     }
-    const result = await admin.messaging().send({ token, data: { title, body, ...(data ?? {}) } });
-    return { content: [{ type: 'text', text: `Push sent. FCM message ID: ${result}` }] };
+    if (!push.ok) {
+      return { content: [{ type: 'text', text: `Push failed: ${push.reason}` }] };
+    }
+    return { content: [{ type: 'text', text: `Push sent. FCM message ID: ${push.id}` }] };
   },
 );
 

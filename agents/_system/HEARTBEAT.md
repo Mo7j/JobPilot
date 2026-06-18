@@ -47,11 +47,35 @@ mcp__jobpilot__set_document("agents", "<slug>", {
 `lastAction` must be specific and useful, e.g. "Analyzed 3 jobs; queued two strong
 fits for your review", not "Run complete".
 
+### Also at the END of every run: one summary notification
+
+Right after the END heartbeat, post **exactly one** `summary` notification so the owner
+gets a per-run recap in the bell **and** on their phone (the bell and push are the same,
+see `NOTIFICATIONS.md`). One per run, even a quiet one:
+
+```
+mcp__jobpilot__add_document("notifications", {
+  "agentId": "<slug>",
+  "type": "summary",
+  "priority": "low",            // "normal" if this run produced something to glance at
+  "title": "<Agent name>, <one-line recap>",
+  "body": "<what you did this run: found/analyzed/queued/asked, or 'Ran, nothing new this time.'>",
+  "actionUrl": "<the most relevant app route, e.g. /approvals, /applications, or null>",
+  "dedupeKey": "run-summary:<slug>:<START_TIME ISO>",
+  "read": false,
+  "createdAt": END_TIME
+})
+```
+
+The Manager's twice-daily digest still rolls these up; this is the lightweight
+per-run heartbeat the owner asked to always receive.
+
 ### Next run
 `nextRun = lastRun + intervalMinutes` (the `intervalMinutes` field is on your agent doc):
-job-search / job-analysis / cv-creation / application-writer = 60, connection-builder = 120,
-career-advisor = 1440. **Manager is special:** set `nextRun` to the next 08:00 or 20:00
-slot in the owner's timezone (see `CONFIG.md`), whichever comes first after this run.
+job-search / job-analysis / cv-creation / application-writer = 300 (every 5 hours),
+connection-builder = 120, career-advisor = 1440. **Manager is special:** set `nextRun` to
+the next 08:00 or 20:00 slot in the owner's timezone (see `CONFIG.md`), whichever comes
+first after this run.
 
 ---
 

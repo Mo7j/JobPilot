@@ -21,7 +21,7 @@ Execute ALL passes in that file, in order.
 
 ## Key context
 - Shared system files: `<AGENTS_DIR>/_system/`
-- Agent slug: `cv-creation` · nextRun = lastRun + 60 min
+- Agent slug: `cv-creation` · nextRun = lastRun + 300 min (every 5h)
 - 1 page verified with pdfinfo, no fabrication, revisions never overwrite approved files.
 
 Do not skip steps. Do not ask for confirmation. Execute the full run as specified.

@@ -15,10 +15,8 @@ OUT = ROOT / "landing" / "src" / "assets"
 MASCOTS = {
     "image1.png": ("hero-mascot.png", 560),
     "image2.png": ("mascot-search.png", 460),
-    "image.png": ("mascot-point.png", 360),
     "iamge3.png": ("mascot-progress.png", 560),
     "iamge4.png": ("mascot-offer.png", 460),
-    "image5.png": ("mascot-relax.png", 560),
     "image6.png": ("mascot-submitted.png", 560),
     "image3.png": ("mascot-working.png", 360),
     "faces.png": ("journey-strip.png", 1600),

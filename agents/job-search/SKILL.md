@@ -1,6 +1,6 @@
 # Job Search Agent
 **Agent ID:** job-search
-**Schedule:** Every 1 hour
+**Schedule:** Every 5 hours (Group A, with job-analysis)
 **Purpose:** Find new roles on the owner's platforms, apply all filter rules, create jobCases in Firebase.
 
 ---
@@ -12,6 +12,7 @@
 - `_system/INSTRUCTIONS.md`, the owner's UI instructions OVERRIDE the rules below.
 - `_system/HEARTBEAT.md`, status reporting (run at start AND end of every run).
 - `_system/NOTIFICATIONS.md`, notification schema, priority, dedupe, action links.
+- `_system/REQUESTS.md`, how to ask the owner for advice (never use the task chat).
 - `_system/LEARNING.md`, reflect & improve every run.
 - `_system/SCHEMA.md`, the data contract.
 - `knowledge/market_playbook.md`, the owner's market: platforms, employers, filters
@@ -40,6 +41,11 @@ mcp__jobpilot__get_document("agentMemory", "job-search")
 → Load searchConfig: targetRoles, targetLocations, seniorityBand, platforms,
   excludeCompanies, remoteOk, lastSearchedAt
 → Load trendingSkills array (carry forward from previous run)
+→ Load seenJobs: a map of jobUrl → { lastSeen, outcome: "created"|"skipped:<reason>" }.
+  This is your memory of every listing you've ALREADY evaluated, so you never spend time
+  re-opening or re-judging the same posting on the next run. (First run: treat as empty.)
+→ Build combinationCursor: which targetRole × targetLocation pairs you covered last run,
+  so this run starts on the ones you haven't done recently (round-robin coverage).
 ```
 
 **0.4 Check backlog**
@@ -58,29 +64,51 @@ Build searches at runtime from `searchConfig` + `market_playbook.md`. Never hard
 roles or locations, the owner's targets live in config so they can change them without
 editing this file.
 
+**Work listings-first, and open postings one by one only when you must.** A run is now ~5h
+apart, so each run should be *thorough but efficient*: cover more keyword × location
+combinations, but never waste time re-reading a posting you've already judged. The flow per
+search is: read the results LIST → drop everything you've already seen → triage from the
+listing → open the individual job page ONLY for the few that need a closer look.
+
 ### LinkedIn (needs Claude in Chrome, check CONFIG.md connectors)
 
-For each of the 3–4 most relevant combinations of `targetRoles × targetLocations` this
-run (rotate combinations across runs so everything gets covered):
+Cover the `targetRoles × targetLocations` grid across runs using `combinationCursor`
+(round-robin). Because runs are 5h apart, do **6–8 combinations** this run (more than the
+old hourly cadence), starting with the pairs least-recently covered, plus any role tagged
+trending in memory.
 
 ```
-https://www.linkedin.com/jobs/search/?keywords=<role, URL-encoded>&location=<location>&f_TPR=r86400[&f_E=<seniority codes>]
+https://www.linkedin.com/jobs/search/?keywords=<role, URL-encoded>&location=<location>&f_TPR=r43200[&f_E=<seniority codes>]
 ```
-- `f_TPR=r86400` = posted in the last 24 hours (hourly runs only need the freshest)
+- `f_TPR=r43200` = posted in the last ~12h. With 5h between runs this comfortably overlaps
+  (nothing slips through a gap) without dredging up days-old posts. Use `r86400` (24h) for
+  slow/low-volume markets, your `seenJobs` memory makes the overlap cheap either way.
 - `f_E=1%2C2` = entry + associate, apply when `seniorityBand` is intern/junior;
   use `3` (mid-senior) for mid-level owners; omit for senior
-- Boolean keyword craft: `knowledge/boolean_library.md`
+- Sort by most-recent so the freshest are on page 1. Boolean keyword craft:
+  `knowledge/boolean_library.md` (combine related titles in ONE search with OR instead of
+  running them separately, fewer page loads, broader net).
 
-For each result page, extract: title, company, location (+ remote/hybrid/onsite),
-job URL, and a description excerpt big enough to apply the filter rules.
+**For each results page (do NOT open postings yet):** extract title, company, location
+(+ remote/hybrid/onsite), job URL, and the listing snippet.
 
-**Limit:** up to 3 pages per search. Stop a search early when every job on a page is
-already in jobCases.
+**Fast triage, in this exact order, before opening anything:**
+1. **Already seen?** If the jobUrl is in `seenJobs` OR already a jobCase (Step 3) → skip it
+   instantly, do not open it. This is the main speed win.
+2. **Listing-level filters** (Step 2) on the snippet: if the title/snippet already make it a
+   clear skip (seniority, excluded role/company, work-auth blocker) → record it in `seenJobs`
+   as `skipped:<reason>` and move on, still no open.
+3. **Open the job page** ONLY for survivors whose listing snippet is too thin to decide
+   (experience or work-auth not visible) or that pass triage and will become a jobCase, you
+   need the full JD text for `searchSummary` and trends. Open one, process it, then the next.
+
+**Limit:** up to 3 pages per search. Stop a search early when an entire page is already in
+`seenJobs` / jobCases (you've caught up to where you were last run).
 
 ### Regional platforms
 
 Use the platforms ranked in `market_playbook.md` (web fetch where the site allows it,
-browser otherwise). Same extraction, same limits.
+browser otherwise). Same listings-first triage, same `seenJobs` skip, same limits.
 
 ### If browser automation is unavailable
 Degrade gracefully: use web fetch for platforms that work without a session, note the
@@ -128,8 +156,11 @@ below show the shape, not the owner's actual values.
 ```
 mcp__jobpilot__list_collection("jobCases")
 ```
-**Skip if:** same URL already exists, OR same company + title (case-insensitive).
-Log duplicates in your run summary; do NOT create a new case.
+**Skip if:** the jobUrl is already in `seenJobs` (memory), OR the same URL already exists in
+jobCases, OR the same company + title (case-insensitive) exists. The `seenJobs` check is
+what stops you re-evaluating skipped postings every run, prefer it as the first, cheapest
+gate (it needs no collection read). Log duplicates in your run summary; do NOT create a new
+case, and do NOT open the posting.
 
 ---
 
@@ -158,8 +189,8 @@ mcp__jobpilot__add_document("jobCases", {
   "cvQuestionsAsked": [], "cvAnswersReceived": {},
   "applicationText": null, "connectionStrategy": null,
   "appliedAt": null, "followUpDate": null,
-  "folderPath": "<JOBS_DIR from CONFIG.md>/[Company] - [Title]",
-  "driveFolderUrl": null, "driveFileUrls": {},
+  "folderPath": "[Company] - [Title]",
+  "filePaths": {}, "driveFileUrls": {},
   "agentLog": [{"timestamp": "[ISO8601]", "agentId": "job-search", "message": "[brief note]"}],
   "errorMessage": null
 })
@@ -234,9 +265,16 @@ mcp__jobpilot__add_document("systemLogs", {
 mcp__jobpilot__set_document("agentMemory", "job-search", {
   "searchConfig": { ...existing, "lastSearchedAt": "[ISO 8601]" },
   "trendingSkills": [...],
+  "seenJobs": { ...existing, "<every jobUrl evaluated this run>": {
+                 "lastSeen": "[ISO 8601]", "outcome": "created"|"skipped:<reason>" } },
+  "combinationCursor": "[which role×location pairs you covered this run]",
   "weakSignals": ["[any notable pattern this run]"]
 })
 ```
+**Keep `seenJobs` bounded:** prune entries whose `lastSeen` is older than ~21 days before
+writing (a posting that age has expired or been reposted, and a repost deserves a fresh
+look). Aim to keep it under a few hundred entries. This map is the agent's "already looked
+at this" memory, it's what makes each run fast.
 
 ## Step 9: Reflect & Learn (see `_system/LEARNING.md`)
 
@@ -246,7 +284,7 @@ their taste? Append the signal to `agentMemory`; promote 3×-repeated patterns i
 
 ## Step 10: Close the heartbeat (see `_system/HEARTBEAT.md`)
 
-Write the END heartbeat (status idle, lastRun, nextRun = +60 min, duration, runCount+1,
+Write the END heartbeat (status idle, lastRun, nextRun = +300 min, duration, runCount+1,
 pendingApprovals, one concrete `lastAction`), and append this run's timestamp to
 `agentInstructions/job-search.readBy`.
 
@@ -266,3 +304,6 @@ pendingApprovals, one concrete `lastAction`), and append this run's timestamp to
 3. Always set status = "found" on new jobCases, never anything else.
 4. Never submit, apply, or contact anyone, search and record only.
 5. If approvalQueue backlog ≥ 10, pause and do not create new cases.
+6. **Never open a posting that's already in `seenJobs` or jobCases.** Triage from the
+   listing first; open individual job pages only for not-yet-seen survivors. Record every
+   URL you evaluate (created or skipped) into `seenJobs` so the next run skips it for free.

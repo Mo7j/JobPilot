@@ -17,14 +17,14 @@ export const AGENTS = [
   {
     slug: 'job-search',
     name: 'Job Search',
-    cadence: 'Every hour',
+    cadence: 'Every 5 hours',
     face: faceJobSearch,
     blurb: 'Hunts fresh postings on your platforms, filters out the noise, and queues only real matches.',
   },
   {
     slug: 'job-analysis',
     name: 'Job Analysis',
-    cadence: 'Every hour',
+    cadence: 'Every 5 hours',
     face: faceJobAnalysis,
     blurb: 'Scores every role 0–100 against your honest profile and researches the company for you.',
     gated: true,
@@ -32,7 +32,7 @@ export const AGENTS = [
   {
     slug: 'cv-creation',
     name: 'CV Creation',
-    cadence: 'Every hour',
+    cadence: 'Every 5 hours',
     face: faceCv,
     blurb: 'Drafts a tailored one-page CV per role, and asks you first instead of inventing experience.',
     gated: true,
@@ -40,7 +40,7 @@ export const AGENTS = [
   {
     slug: 'application-writer',
     name: 'Application Writer',
-    cadence: 'Every hour',
+    cadence: 'Every 5 hours',
     face: faceApp,
     blurb: 'Fills the whole application form, screenshots it, and stops dead before the submit button.',
     gated: true,
