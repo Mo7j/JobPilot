@@ -6,6 +6,21 @@
 
 **A crew of AI agents that runs your job search while you sleep.**
 
+<p>
+  <a href="https://github.com/Mo7j/JobPilot/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Mo7j/JobPilot/ci.yml?branch=main&label=build&logo=github" alt="Build status" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/Mo7j/JobPilot?color=blue" alt="MIT license" /></a>
+  <a href="https://7js-jobpilot.netlify.app"><img src="https://img.shields.io/badge/live-demo-6c5ce7?logo=netlify&logoColor=white" alt="Live demo" /></a>
+  <img src="https://img.shields.io/badge/powered%20by-Claude-d97757?logo=anthropic&logoColor=white" alt="Powered by Claude" />
+  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen" alt="PRs welcome" /></a>
+</p>
+<p>
+  <img src="https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=black" alt="React 19" />
+  <img src="https://img.shields.io/badge/Vite-6-646cff?logo=vite&logoColor=white" alt="Vite 6" />
+  <img src="https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss&logoColor=white" alt="Tailwind 4" />
+  <img src="https://img.shields.io/badge/Firebase-11-ffca28?logo=firebase&logoColor=black" alt="Firebase 11" />
+  <img src="https://img.shields.io/badge/Node-20+-339933?logo=node.js&logoColor=white" alt="Node 20+" />
+</p>
+
 Seven Claude agents hunt roles, score fit, draft tailored CVs, and fill applications, 
 then stop and wait for **your** approval. Self-hosted on **your** Firebase and **your**
 Claude. Your data never leaves your project.

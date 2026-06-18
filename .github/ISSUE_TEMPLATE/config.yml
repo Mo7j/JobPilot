@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & ideas (Discussions)
+    url: https://github.com/Mo7j/JobPilot/discussions
+    about: For setup help, questions, and open-ended discussion. Use issues for bugs and feature requests.
+  - name: Setup guide
+    url: https://github.com/Mo7j/JobPilot/blob/main/docs/SETUP.md
+    about: Most "it won't run" problems are answered here, with a checkpoint per step.
