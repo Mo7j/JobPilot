@@ -25,9 +25,14 @@ Seven Claude agents hunt roles, score fit, draft tailored CVs, and fill applicat
 then stop and wait for **your** approval. Self-hosted on **your** Firebase and **your**
 Claude. Your data never leaves your project.
 
-[Live demo](https://7js-jobpilot.netlify.app) · [Setup guide](docs/SETUP.md) ·
-[Deploy guide](docs/DEPLOY.md) · [The agents](docs/AGENTS.md) ·
-[Architecture](docs/ARCHITECTURE.md) · [FAQ](docs/FAQ.md)
+<p>
+  <a href="https://7js-jobpilot.netlify.app"><img src="https://img.shields.io/badge/▶_Try_the_live_demo-6c5ce7?style=for-the-badge&logo=netlify&logoColor=white" alt="Try the live demo" /></a>
+  <a href="https://7js-jobpilot-landing.netlify.app"><img src="https://img.shields.io/badge/🌐_Visit_the_website-0984e3?style=for-the-badge&logoColor=white" alt="Visit the website" /></a>
+  <a href="docs/media/explainer.mp4"><img src="https://img.shields.io/badge/🎬_Watch_the_explainer-e17055?style=for-the-badge&logoColor=white" alt="Watch the explainer video" /></a>
+</p>
+
+📖 [Setup guide](docs/SETUP.md) · 🚀 [Deploy guide](docs/DEPLOY.md) · 🤖 [The agents](docs/AGENTS.md) ·
+🏗️ [Architecture](docs/ARCHITECTURE.md) · ❓ [FAQ](docs/FAQ.md)
 
 <img src="docs/screenshots/overview-light.png" alt="JobPilot dashboard" width="800" />
 
